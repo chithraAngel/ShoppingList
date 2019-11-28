@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html>
+
+<link rel="stylesheet"href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+<script>
+var myApp = angular.module('myApp', []);
+myApp.controller('cartController', function($http, $scope){
+	$scope.cartItems = [];
+    $scope.isCartVisible = false;
+
+    // Fetch api data
+    $http.get('https://api.myjson.com/bins/qzuzi').then(function(response){
+    //  console.log(response.data);
+    $scope.pList = response.data;
+    });
+    $scope.add2Cart = function(selectedItem) {
+         selectedItem.qty =1;
+    	$scope.cartItems.push(selectedItem);
+       };
+      $scope.showCart = function() {
+      	$scope.isCartVisible = true;
+       };
+
+      $scope.hideCart = function() {
+       $scope.isCartVisible = false;
+      };
+
+     $scope.removeCartItem = function(selectedItem) {
+      $scope.cartItems.splice($scope.cartItems.indexOf(selectedItem), 1);
+      selectedItem.qty = undefined;
+     };
+ });
+ </script>
+
+ <style>
+
+  .sale-circle {
+    position: absolute;
+     right: 0%;
+     top: -5%;
+     background-color: #0d00ff;
+     border: 1px solid blue;
+     border-radius: 25px;
+     padding: 5px;
+     color: white;
+  }
+
+	body{
+        padding-top: 60px;
+        padding-bottom: 40px;
+    }
+    .header, .footer{
+        width: 100%;
+        position: fixed;
+        background: #0066ff;
+        padding: 10px 0;
+        color: #fff;
+    }
+    .header{
+        top: 11px;
+    }
+    .footer{
+        bottom: 0;
+    }
+    .container{
+        width: 80%;
+        margin: 0 auto; /* Center the DIV horizontally */
+    }
+    nav a{
+        color: #fff;
+        text-decoration: none;
+        padding: 7px 25px;
+        display: inline-block;
+    }
+ </style>
+
+ </script>
+<body>
+	<div class="header">
+        <div class="container">
+        </div>
+    </div>
+		<div class="footer">
+		        <div class="container">@Copyright &copy; 2019 Adobe</div>
+    </div>
+<div ng-app="myApp" class="container-fluid">
+
+	<div ng-controller="cartController">
+
+     <div class="row">
+      <div class="col">
+         <label>My Cart : </label>
+
+         <span>
+          <a href="#" class="cursor-pointer" ng-if="cartItems.length > 0" title="Click here to show cart items" ng-click="showcart()">{{cartItems.length}}</a>
+
+          <span ng-if="cartitems.length == 0">{{cartItems.length}}</span>
+
+          </span>
+         </div>
+        </div>
+
+      <div class="row" ng-show="isCartVisible">
+       <div class="Col">
+       <table class="table table-bordered">
+       <thead>
+       <tr>
+       	 <th>SL#</th>
+         <th>Name</th>
+         <th>Price</th>
+         <th>Qty</th>
+         <th><a href="#" ng-click="hideCart()">Continue to shopping</a></th>
+         </tr>
+        <thead>
+        <tbody>
+          <tr ng-repeat="item in cartItems">
+          <td>{{$index+1}}</td>
+          <td>{{item.name}}</td>
+          <td>{{item.price - (item.price*item.discount/100)}}</td>
+          <td><input type="number" min="1" ng-model="item.qty" /></td>
+          <td><button class="btn btn-sm btn-danger" ng-click="removeCartItem(item)">Remove Item</button></td>
+         </tr>
+         </tbody>
+         </table>
+         </div>
+        </div>
+
+        <div class="row" ng-show="!isCartVisible">
+          <div class="col-3 mb-4" ng-repeat="item in pList" style="position: relative">
+          <div class="sale-circle">{{item.discount}} %</div>
+         <img ng-src="{{item.img_url}}" class="img-thumbnail mb-2" alt="{{item.name}}">
+         <div class="col">{{item.name}}</div>
+         <div class="col">Sale Price: Rs.{{item.price -(item.price*item.discount/100)}} &nbsp; </div>
+         <div class="col">Price: Rs.<del>{{item.price}}</del></div>
+         <div class="col">Save: Rs.{{item.price*item.discount/100}}</div>
+         <div class="col">
+         <button class="btn btn-sm btn-primary rouned-0" ng-click="add2Cart(item)" ng-if="!item.qty">Add To cart</button>
+          <button class="btn btn-sm btn-primary rounded-0" ng-click="showCart()" ng-if="item.qty > 0">View Cart</button>
+
+         </div>
+      </div>
+
+
+   </div>
+ </div>
+</div>
+
+</body>
+</html>
